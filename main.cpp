@@ -4,9 +4,11 @@
 
 using namespace std;
 
+
+
 void dfs_start(){
 
-    string x1, y1, x2, y2;
+    int x1, y1, x2, y2, xc, yc;
 
     cout << endl;
     cout << "Please enter the starting coordinates." << endl << "Please enter the starting X coordinate: ";
@@ -21,6 +23,16 @@ void dfs_start(){
     cin >> y2;
 
     cout << "Coords are: (" << x1 << "," << y1 << ") and (" << x2 << "," << y2 << ")";
+
+    tree<string> chess_path;
+    tree<string>::iterator top, one, two, three, four, five, six, seven, eight, location;
+
+    while (xc == x2 && yc == y2){
+
+        //get possible moves and add to the tree using dfs
+
+
+    }
 
     return;
 
