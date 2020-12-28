@@ -23,4 +23,13 @@ The application must:
     - User would define starting location and finish location
     - Knight can move two squares forward and after either one square right or left
     - Allows it to go anywhere on the board
-    - So first use 
+    - So first use
+  
+- String Search within Destiny 2 Lore Entries
+    - Boyer-Moore vs Rabin-Karp
+    - Different size lore posts to check for
+    - Menu with options
+      - Run both algorithms
+      - Run Boyer-Moore
+      - Run Rabin-Karp
+    - Timers to benchmark each of the algorithms
