@@ -7,6 +7,21 @@
 
 using namespace std;
 
+
+const unsigned PRIME_BASE = 257;
+const unsigned PRIME_MOD = 1000000007;
+
+unsigned lhash(const string& s)
+{
+    unsigned ret = 0;
+    for (int i = 0; i < s.size(); i++)
+    {
+        ret *= PRIME_BASE; //shift over by one
+        ret += s[i]; //add the current char
+    }
+    return ret;
+}
+
 void print(vector<string> const &input)
 {
     for (int i = 0; i < input.size(); i++) {
@@ -26,7 +41,7 @@ int bm(string data, string pattern){
     //boyer-moore function
 
     string current, check_data;
-    int pattern_position = 0, data_position = 0;
+    int data_position = 0;
 
     //debug values
 //    data = "fox the quick brown foxfox jumps fox over the lazy fox";
@@ -160,8 +175,91 @@ int bm(string data, string pattern){
 
 int rk(){
 
-    //rabin-karp function
-    return 0;
+//    cout << endl;
+//
+//    cout << data;
+//
+//    cout << endl;
+//
+//    cout << pattern;
+//
+//    cout << endl;
+
+
+    string current, check_data;
+    //debug values
+    string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
+    string pattern = "The";
+
+    int pattern_size = pattern.size();
+    unsigned int pattern_hash = lhash(pattern);
+    int data_beg = 0, data_end = pattern_size - 1;
+
+    cout << endl << "Size=" << pattern_size << endl;
+    vector<string> pattern_array(pattern_size);
+    vector<int> indexes;
+
+    long long power = 1;
+    for (int i = 0; i < pattern_size; i++)
+        power = (power * PRIME_BASE) % PRIME_MOD;
+
+
+    for (int x = 0; x < pattern_size; x++){
+
+        // adding each letter of pattern to array
+        pattern_array[x] = (pattern.at(x));
+        //cout << endl << "Current Array is ";
+        //print(pattern_array);
+        //cout << endl;
+
+    }
+
+    cout << data.substr(0, pattern_size);
+
+    unsigned int data_hash = lhash(data.substr(0, pattern_size));
+
+    cout << "Hashes are " << data_hash << ", " << pattern_hash << endl;
+
+    while (true){
+
+        if (data_hash == pattern_hash){
+
+            //cout << "match found"<< endl;
+            indexes.push_back(data_beg);
+
+        }
+        else{
+
+            //cout << "no match found next position"<< endl;
+
+        }
+
+
+        data_end++;
+
+        data_hash = data_hash*PRIME_BASE + data[data_end];
+        data_hash %= PRIME_MOD;
+
+
+        data_hash -= power * data[data_beg] % PRIME_MOD;
+        if (data_hash < 0) //negative can be made positive with mod
+            data_hash += PRIME_MOD;
+
+        data_beg++;
+
+        if (data_end == data.size() - 1){
+
+            cout << "Reached end of Data, " << indexes.size() << " instances of pattern found. Index locations are:" << endl;
+
+            print(indexes);
+
+            cout << endl;
+
+            return 0;
+
+        }
+
+    }
 
 }
 
@@ -202,6 +300,29 @@ int run_boyer(){
 int run_rabin(){
 
     //initialising running just rabin karp and measuring performance
+
+//    string data, pattern, filename;
+//
+//    cout << endl << "Please enter the file name: ";
+//    cin >> filename;
+//    cout << endl;
+//    cout << endl << "Please enter the search string: ";
+//    cin >> pattern;
+//    cout << endl;
+//
+//    ifstream f(filename);
+//
+//    f.seekg(0, ios::end);
+//    data.reserve(f.tellg());
+//    f.seekg(0, ios::beg);
+//
+//    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+
+    //cout << data;
+
+    //rk(data, pattern);
+    rk();
+
     return 0;
 
 }
@@ -234,7 +355,7 @@ int main() {
 
         else if (menu_choice == 3){
 
-            //run_rabin();
+            run_rabin();
             cout << "Run rabin";
 
         }
