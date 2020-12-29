@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <fstream>
 #include <streambuf>
+#include <chrono>
 
 using namespace std;
 
@@ -13,11 +14,11 @@ const unsigned PRIME_MOD = 1000000007;
 
 unsigned lhash(const string& s)
 {
-    unsigned ret = 0;
+    long long ret = 0;
     for (int i = 0; i < s.size(); i++)
     {
-        ret *= PRIME_BASE; //shift over by one
-        ret += s[i]; //add the current char
+        ret = ret*PRIME_BASE + s[i];
+        ret %= PRIME_MOD; //don't overflow
     }
     return ret;
 }
@@ -66,17 +67,24 @@ int bm(string data, string pattern){
 
     }
 
+    auto start_bm = chrono::high_resolution_clock::now();
+
     while (true){
 
         //cout << data_position;
 
         if (data_position >= data.size()){
 
-            cout << endl << "Reached end of data!" << endl;
+            auto finish_bm = std::chrono::high_resolution_clock::now();
+
+            cout << endl << "Reached end of data!";
             cout << endl << "The amount of patterns found: " << indexes.size() << endl;
-            cout << endl << "Pattern was found at these indexes: " << endl;
-            print(indexes);
-            cout << endl;
+            //cout << endl << "Pattern was found at these indexes: " << endl;
+            //print(indexes);
+
+            chrono::duration<double> time_taken_bm = finish_bm - start_bm;
+
+            cout << "It took this look to finish Boyer Moore: " << time_taken_bm.count() << endl;
 
             return 0;
 
@@ -173,99 +181,88 @@ int bm(string data, string pattern){
 
 }
 
-int rk(){
+int rk(string data, string pattern){
 
-//    cout << endl;
-//
-//    cout << data;
-//
-//    cout << endl;
-//
-//    cout << pattern;
-//
-//    cout << endl;
+    //string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
+    //string pattern = "Quick Brown";
+    int index;
 
-
-    string current, check_data;
-    //debug values
-    string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
-    string pattern = "The";
-
-    int pattern_size = pattern.size();
-    unsigned int pattern_hash = lhash(pattern);
-    int data_beg = 0, data_end = pattern_size - 1;
-
-    cout << endl << "Size=" << pattern_size << endl;
-    vector<string> pattern_array(pattern_size);
     vector<int> indexes;
 
+    auto start_rk = chrono::high_resolution_clock::now();
+
+    //I'm using long longs to avoid overflow
+    long long pattern_hash = lhash(pattern);
+    long long data_hash = 0;
+
+    //you could use exponentiation by squaring for extra speed
     long long power = 1;
-    for (int i = 0; i < pattern_size; i++)
+    for (int i = 0; i < pattern.size(); i++)
         power = (power * PRIME_BASE) % PRIME_MOD;
 
-
-    for (int x = 0; x < pattern_size; x++){
-
-        // adding each letter of pattern to array
-        pattern_array[x] = (pattern.at(x));
-        //cout << endl << "Current Array is ";
-        //print(pattern_array);
-        //cout << endl;
-
-    }
-
-    cout << data.substr(0, pattern_size);
-
-    unsigned int data_hash = lhash(data.substr(0, pattern_size));
-
-    cout << "Hashes are " << data_hash << ", " << pattern_hash << endl;
-
-    while (true){
-
-        if (data_hash == pattern_hash){
-
-            //cout << "match found"<< endl;
-            indexes.push_back(data_beg);
-
-        }
-        else{
-
-            //cout << "no match found next position"<< endl;
-
-        }
-
-
-        data_end++;
-
-        data_hash = data_hash*PRIME_BASE + data[data_end];
+    for (int i = 0; i < data.size(); i++)
+    {
+        //add the last letter
+        data_hash = data_hash*PRIME_BASE + data[i];
         data_hash %= PRIME_MOD;
 
+        //remove the first character, if needed
+        if (i >= pattern.size())
+        {
+            data_hash -= power * data[i-pattern.size()] % PRIME_MOD;
+            if (data_hash < 0) //negative can be made positive with mod
+                data_hash += PRIME_MOD;
+        }
 
-        data_hash -= power * data[data_beg] % PRIME_MOD;
-        if (data_hash < 0) //negative can be made positive with mod
-            data_hash += PRIME_MOD;
+        //match?
+        if (i >= pattern.size()-1 && pattern_hash == data_hash){
 
-        data_beg++;
+            index = i - (pattern.size()-1);
 
-        if (data_end == data.size() - 1){
-
-            cout << "Reached end of Data, " << indexes.size() << " instances of pattern found. Index locations are:" << endl;
-
-            print(indexes);
-
-            cout << endl;
-
-            return 0;
+            //cout << "match found";
+            indexes.push_back(index);
 
         }
 
     }
 
+    auto finish_rk = chrono::high_resolution_clock::now();
+    chrono::duration<double> time_taken_rk = finish_rk - start_rk;
+    cout << endl << "Reached end of data!";
+    cout << endl << "The amount of patterns found: " << indexes.size() << endl;
+    //cout << endl << "Pattern was found at these indexes: " << endl;
+    //print(indexes);
+
+    cout << "It took this look to finish rabin karp : " << time_taken_rk.count() << endl;
+
+    return 0;
 }
 
 int run_both(){
 
     //initialising running both algorithms one after another testing performance
+    string data, pattern, filename;
+
+    cout << endl << "Please enter the file name: ";
+    cin >> filename;
+    cout << endl;
+    cout << endl << "Please enter the search string: ";
+    cin >> pattern;
+    cout << endl;
+
+    ifstream f(filename);
+
+    f.seekg(0, ios::end);
+    data.reserve(f.tellg());
+    f.seekg(0, ios::beg);
+
+    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+
+    //cout << data;
+
+    bm(data, pattern);
+    rk(data, pattern);
+
     return 0;
 
 }
@@ -301,27 +298,27 @@ int run_rabin(){
 
     //initialising running just rabin karp and measuring performance
 
-//    string data, pattern, filename;
-//
-//    cout << endl << "Please enter the file name: ";
-//    cin >> filename;
-//    cout << endl;
-//    cout << endl << "Please enter the search string: ";
-//    cin >> pattern;
-//    cout << endl;
-//
-//    ifstream f(filename);
-//
-//    f.seekg(0, ios::end);
-//    data.reserve(f.tellg());
-//    f.seekg(0, ios::beg);
-//
-//    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+    string data, pattern, filename;
+
+    cout << endl << "Please enter the file name: ";
+    cin >> filename;
+    cout << endl;
+    cout << endl << "Please enter the search string: ";
+    cin >> pattern;
+    cout << endl;
+
+    ifstream f(filename);
+
+    f.seekg(0, ios::end);
+    data.reserve(f.tellg());
+    f.seekg(0, ios::beg);
+
+    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
 
     //cout << data;
 
-    //rk(data, pattern);
-    rk();
+    rk(data, pattern);
+    //rk();
 
     return 0;
 
@@ -340,15 +337,14 @@ int main() {
 
         if (menu_choice == 1){
 
-            //run_both();
-            cout << "Run both";
+            run_both();
 
 
         }
 
         else if (menu_choice == 2){
 
-            cout << "Run boyer";
+            //cout << "Run boyer";
             run_boyer();
 
         }
@@ -356,7 +352,6 @@ int main() {
         else if (menu_choice == 3){
 
             run_rabin();
-            cout << "Run rabin";
 
         }
 
