@@ -2,30 +2,40 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <streambuf>
 
 using namespace std;
 
-void print(std::vector<string> const &input)
+void print(vector<string> const &input)
 {
     for (int i = 0; i < input.size(); i++) {
-        std::cout << input.at(i) << ' ';
+        cout << input.at(i) << ' ';
     }
 }
 
-int bm(){
+void print(vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        cout << input.at(i) << " ";
+    }
+}
+
+int bm(string data, string pattern){
 
     //boyer-moore function
 
-    string data, pattern, current, check_data;
+    string current, check_data;
     int pattern_position = 0, data_position = 0;
 
     //debug values
-    data = "the quick brown fox jumps over the lazy dog";
-    pattern = "fox jumps";
+//    data = "fox the quick brown foxfox jumps fox over the lazy fox";
+//    pattern = "fox";
 
     int pattern_size = pattern.size();
-   // cout << endl << "Size=" << pattern_size << endl;
+   //cout << endl << "Size=" << pattern_size << endl;
     vector<string> pattern_array(pattern_size);
+    vector<int> indexes;
 
 
 
@@ -43,9 +53,15 @@ int bm(){
 
     while (true){
 
-        if (data_position > data.size()){
+        //cout << data_position;
 
-            cout << endl << "Search term not in data" << endl;
+        if (data_position >= data.size()){
+
+            cout << endl << "Reached end of data!" << endl;
+            cout << endl << "The amount of patterns found: " << indexes.size() << endl;
+            cout << endl << "Pattern was found at these indexes: " << endl;
+            print(indexes);
+            cout << endl;
 
             return 0;
 
@@ -57,7 +73,7 @@ int bm(){
 
         for(int x = 0; x < pattern_size; x++ ){
 
-            cout << endl << "Checking " << pattern_array[x] << " Against " << current << endl;
+//            cout << endl << "Checking " << pattern_array[x] << " Against " << current << endl;
 
             if (pattern_array[x] != current){
 
@@ -67,18 +83,18 @@ int bm(){
 
         }
 
-        cout << endl << "C=" << c << endl;
+//        cout << endl << "C=" << c << endl;
 
         if (c == 0){
 
-            cout << "No pattern found";
+//            cout << "No pattern found";
 
             data_position = data_position + pattern_size;
             //cout << endl << "New data p=" << data_position << endl;
         }
         else{
 
-            cout << "Letter matched";
+//            cout << "Letter matched";
 
                 //check what position the matched letter is in in the pattern
 
@@ -104,11 +120,11 @@ int bm(){
 
                     check_data = data.at(data_position);
 
-                    cout << endl << "Checking " << pattern_array[n] << " Against " << check_data << endl;
+//                    cout << endl << "Checking " << pattern_array[n] << " Against " << check_data << endl;
 
                     if ( check_data == pattern_array[n]){
 
-                        cout << endl << "Matching letter" << endl;
+//                        cout << endl << "Matching letter" << endl;
 
                         check_v++;
 
@@ -117,7 +133,9 @@ int bm(){
                     }
                     else{
 
-                        cout << endl << "Letter no match breaking for loop" << endl;
+//                      cout << endl << "Letter no match breaking for loop" << endl;
+
+                        data_position = data_position + pattern_size + 1;
 
                         break;
 
@@ -127,8 +145,8 @@ int bm(){
 
                 if (check_v == pattern_size){
 
-                    cout << endl << "Word has been found at index " << data_position-pattern_size << endl;
-                    return 0;
+//                    cout << endl << "Word has been found at index " << data_position-pattern_size << endl;
+                    indexes.push_back(data_position-pattern_size);
 
                 }
 
@@ -156,9 +174,26 @@ int run_both(){
 
 int run_boyer(){
 
-    //initialising running just boyer moore and measuring performance
+    string data, pattern, filename;
 
-    bm();
+    cout << endl << "Please enter the file name: ";
+    cin >> filename;
+    cout << endl;
+    cout << endl << "Please enter the search string: ";
+    cin >> pattern;
+    cout << endl;
+
+    ifstream f(filename);
+
+    f.seekg(0, ios::end);
+    data.reserve(f.tellg());
+    f.seekg(0, ios::beg);
+
+    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+
+    //cout << data;
+
+    bm(data, pattern);
 
     return 0;
 
