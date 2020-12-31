@@ -7,29 +7,25 @@
 
 using namespace std;
 
-
 const unsigned PRIME_BASE = 257;
 const unsigned PRIME_MOD = 1000000007;
 
-unsigned lhash(const string& s)
-{
+unsigned lhash(const string &s) {
     long long ret = 0;
-    for (char i : s)
-    {
-        ret = ret*PRIME_BASE + i;
+    for (char i : s) {
+        ret = ret * PRIME_BASE + i;
         ret %= PRIME_MOD; //don't overflow
     }
     return ret;
 }
 
-void print(vector<int> const &input)
-{
+void print(vector<int> const &input) {
     for (int i : input) {
         cout << i << " ";
     }
 }
 
-int bm(string data, string pattern){
+int bm(string data, string pattern) {
 
     //boyer-moore function
 
@@ -41,15 +37,14 @@ int bm(string data, string pattern){
 //    pattern = "fox";
 
     int pattern_size = pattern.size();
-   //cout << endl << "Size=" << pattern_size << endl;
+    //cout << endl << "Size=" << pattern_size << endl;
     vector<string> pattern_array(pattern_size);
     vector<int> indexes;
 
 
-
     data_position = pattern_size - 1;
 
-    for (int x = 0; x < pattern_size; x++){
+    for (int x = 0; x < pattern_size; x++) {
 
         // adding each letter of pattern to array
         pattern_array[x] = (pattern.at(x));
@@ -61,11 +56,11 @@ int bm(string data, string pattern){
 
     auto start_bm = chrono::high_resolution_clock::now();
 
-    while (true){
+    while (true) {
 
         //cout << data_position;
 
-        if (data_position >= data.size()){
+        if (data_position >= data.size()) {
 
             auto finish_bm = std::chrono::high_resolution_clock::now();
 
@@ -86,11 +81,11 @@ int bm(string data, string pattern){
 
         int c = pattern_size;
 
-        for(int x = 0; x < pattern_size; x++ ){
+        for (int x = 0; x < pattern_size; x++) {
 
 //            cout << endl << "Checking " << pattern_array[x] << " Against " << current << endl;
 
-            if (pattern_array[x] != current){
+            if (pattern_array[x] != current) {
 
                 c--;
 
@@ -100,70 +95,68 @@ int bm(string data, string pattern){
 
 //        cout << endl << "C=" << c << endl;
 
-        if (c == 0){
+        if (c == 0) {
 
 //            cout << "No pattern found";
 
             data_position = data_position + pattern_size;
             //cout << endl << "New data p=" << data_position << endl;
-        }
-        else{
+        } else {
 
 //            cout << "Letter matched";
 
-                //check what position the matched letter is in in the pattern
+            //check what position the matched letter is in in the pattern
 
-                int pos;
+            int pos;
 
-                for (pos = pattern_size-1; 0 < pos; pos--){
+            for (pos = pattern_size - 1; 0 < pos; pos--) {
 
-                    if(pattern_array[pos] == current){
+                if (pattern_array[pos] == current) {
 
-                        break;
-
-                    }
+                    break;
 
                 }
 
-                //jump back by pos and check if its the word
+            }
+
+            //jump back by pos and check if its the word
 
             data_position = data_position - pos;
 
-                int check_v = 0;
+            int check_v = 0;
 
-                for (int n = 0; n < pattern_size; n++){
+            for (int n = 0; n < pattern_size; n++) {
 
-                    check_data = data.at(data_position);
+                check_data = data.at(data_position);
 
 //                    cout << endl << "Checking " << pattern_array[n] << " Against " << check_data << endl;
 
-                    if ( check_data == pattern_array[n]){
+                if (check_data == pattern_array[n]) {
 
 //                        cout << endl << "Matching letter" << endl;
 
-                        check_v++;
+                    check_v++;
 
-                        data_position++;
+                    data_position++;
 
-                    }
-                    else{
+                } else {
 
 //                      cout << endl << "Letter no match breaking for loop" << endl;
 
-                        data_position = data_position + pattern_size;
+                    data_position = data_position + pattern_size;
 
-                        break;
-
-                    }
+                    break;
 
                 }
 
-                if (check_v == pattern_size){
+            }
+
+            if (check_v == pattern_size) {
 
 //                    cout << endl << "Word has been found at index " << data_position-pattern_size << endl;
-                    indexes.push_back(data_position-pattern_size);
+                indexes.push_back(data_position - pattern_size);
 
-                }
+            }
 
         }
 
@@ -171,7 +164,7 @@ int bm(string data, string pattern){
 
 }
 
-int rk(string data, const string& pattern){
+int rk(string data, const string &pattern) {
 
     //DEBUG VALUES
     //string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
@@ -194,17 +187,16 @@ int rk(string data, const string& pattern){
 
     }
 
-    for (int i = 0; i < data.size(); i++)
-    {
+    for (int i = 0; i < data.size(); i++) {
 
-        data_hash = data_hash*PRIME_BASE + data[i];
+        data_hash = data_hash * PRIME_BASE + data[i];
 
         data_hash %= PRIME_MOD;
 
 
-        if (i >= pattern.size()){
+        if (i >= pattern.size()) {
 
-            data_hash -= p * data[i-pattern.size()] % PRIME_MOD;
+            data_hash -= p * data[i - pattern.size()] % PRIME_MOD;
 
             if (data_hash < 0) {
 
@@ -214,9 +206,9 @@ int rk(string data, const string& pattern){
 
         }
 
-        if (i >= pattern.size()-1 && pattern_hash == data_hash){
+        if (i >= pattern.size() - 1 && pattern_hash == data_hash) {
 
-            index = i - (pattern.size()-1);
+            index = i - (pattern.size() - 1);
 
             //cout << "match found";
             indexes.push_back(index);
@@ -237,7 +229,7 @@ int rk(string data, const string& pattern){
     return 0;
 }
 
-int run_both(){
+int run_both() {
 
     //initialising running both algorithms one after another testing performance
     string data, pattern, filename;
@@ -255,7 +247,7 @@ int run_both(){
     data.reserve(f.tellg());
     f.seekg(0, ios::beg);
 
-    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+    data.assign((istreambuf_iterator<char>(f)), istreambuf_iterator<char>());
 
     //cout << data;
 
@@ -266,7 +258,7 @@ int run_both(){
 
 }
 
-int run_boyer(){
+int run_boyer() {
 
     string data, pattern, filename;
 
@@ -283,7 +275,7 @@ int run_boyer(){
     data.reserve(f.tellg());
     f.seekg(0, ios::beg);
 
-    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+    data.assign((istreambuf_iterator<char>(f)), istreambuf_iterator<char>());
 
     //cout << data;
 
@@ -293,7 +285,7 @@ int run_boyer(){
 
 }
 
-int run_rabin(){
+int run_rabin() {
 
     //initialising running just rabin karp and measuring performance
 
@@ -312,7 +304,7 @@ int run_rabin(){
     data.reserve(f.tellg());
     f.seekg(0, ios::beg);
 
-    data.assign((istreambuf_iterator<char>(f)),istreambuf_iterator<char>());
+    data.assign((istreambuf_iterator<char>(f)), istreambuf_iterator<char>());
 
     //cout << data;
 
@@ -327,46 +319,38 @@ int main() {
 
     int menu_choice;
 
-    while (true){
+    while (true) {
 
-        cout << "1. Run Both Algorithms" << endl << "2. Run Boyer Moore" << endl << "3. Run Rabin Karp" << endl << "4. Quit" << endl <<  "Please choose one of the above by entering its corresponding number: ";
+        cout << "1. Run Both Algorithms" << endl << "2. Run Boyer Moore" << endl << "3. Run Rabin Karp" << endl
+             << "4. Quit" << endl << "Please choose one of the above by entering its corresponding number: ";
         cin >> menu_choice;
 
 
-        if (menu_choice == 1){
+        if (menu_choice == 1) {
 
             run_both();
 
 
-        }
-
-        else if (menu_choice == 2){
+        } else if (menu_choice == 2) {
 
             //cout << "Run boyer";
             run_boyer();
 
-        }
-
-        else if (menu_choice == 3){
+        } else if (menu_choice == 3) {
 
             run_rabin();
 
-        }
-
-        else if (menu_choice == 4){
+        } else if (menu_choice == 4) {
 
             //Quit Program
             return 0;
 
-        }
-
-        else{
+        } else {
 
             cout << "Invalid Option! Please try again!";
             cout << endl;
 
         }
-
 
 
     }
