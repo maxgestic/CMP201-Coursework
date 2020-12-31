@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <fstream>
 #include <streambuf>
 #include <chrono>
@@ -15,25 +14,18 @@ const unsigned PRIME_MOD = 1000000007;
 unsigned lhash(const string& s)
 {
     long long ret = 0;
-    for (int i = 0; i < s.size(); i++)
+    for (char i : s)
     {
-        ret = ret*PRIME_BASE + s[i];
+        ret = ret*PRIME_BASE + i;
         ret %= PRIME_MOD; //don't overflow
     }
     return ret;
 }
 
-void print(vector<string> const &input)
-{
-    for (int i = 0; i < input.size(); i++) {
-        cout << input.at(i) << ' ';
-    }
-}
-
 void print(vector<int> const &input)
 {
-    for (int i = 0; i < input.size(); i++) {
-        cout << input.at(i) << " ";
+    for (int i : input) {
+        cout << i << " ";
     }
 }
 
@@ -42,10 +34,10 @@ int bm(string data, string pattern){
     //boyer-moore function
 
     string current, check_data;
-    int data_position = 0;
+    int data_position;
 
     //debug values
-//    data = "fox the quick brown foxfox jumps fox over the lazy fox";
+//    data = "the the quick brown fox jumps over the lazy dog";
 //    pattern = "fox";
 
     int pattern_size = pattern.size();
@@ -177,12 +169,11 @@ int bm(string data, string pattern){
 
     }
 
-    return 0;
-
 }
 
-int rk(string data, string pattern){
+int rk(string data, const string& pattern){
 
+    //DEBUG VALUES
     //string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
     //string pattern = "Quick Brown";
     int index;
@@ -191,30 +182,38 @@ int rk(string data, string pattern){
 
     auto start_rk = chrono::high_resolution_clock::now();
 
-    //I'm using long longs to avoid overflow
     long long pattern_hash = lhash(pattern);
     long long data_hash = 0;
+    //cout << "Hashes are: " << pattern_hash << " and " << data_hash << endl;
 
-    //you could use exponentiation by squaring for extra speed
-    long long power = 1;
-    for (int i = 0; i < pattern.size(); i++)
-        power = (power * PRIME_BASE) % PRIME_MOD;
+    long long p = 1;
+
+    for (int i = 0; i < pattern.size(); i++) {
+
+        p = (p * PRIME_BASE) % PRIME_MOD;
+
+    }
 
     for (int i = 0; i < data.size(); i++)
     {
-        //add the last letter
+
         data_hash = data_hash*PRIME_BASE + data[i];
+
         data_hash %= PRIME_MOD;
 
-        //remove the first character, if needed
-        if (i >= pattern.size())
-        {
-            data_hash -= power * data[i-pattern.size()] % PRIME_MOD;
-            if (data_hash < 0) //negative can be made positive with mod
+
+        if (i >= pattern.size()){
+
+            data_hash -= p * data[i-pattern.size()] % PRIME_MOD;
+
+            if (data_hash < 0) {
+
                 data_hash += PRIME_MOD;
+
+            }
+
         }
 
-        //match?
         if (i >= pattern.size()-1 && pattern_hash == data_hash){
 
             index = i - (pattern.size()-1);
@@ -327,7 +326,6 @@ int run_rabin(){
 int main() {
 
     int menu_choice;
-    bool chosen = false;
 
     while (true){
 
