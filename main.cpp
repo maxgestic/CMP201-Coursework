@@ -123,7 +123,7 @@ int bm(string data, string pattern){
 
                 int pos;
 
-                for (pos = 0; pos < pattern_size; pos++){
+                for (pos = pattern_size-1; 0 < pos; pos--){
 
                     if(pattern_array[pos] == current){
 
@@ -158,7 +158,7 @@ int bm(string data, string pattern){
 
 //                      cout << endl << "Letter no match breaking for loop" << endl;
 
-                        data_position = data_position + pattern_size + 1;
+                        data_position = data_position + pattern_size;
 
                         break;
 
@@ -331,7 +331,7 @@ int main() {
 
     while (true){
 
-        cout << "Please choose from the following: ";
+        cout << "1. Run Both Algorithms" << endl << "2. Run Boyer Moore" << endl << "3. Run Rabin Karp" << endl << "4. Quit" << endl <<  "Please choose one of the above by entering its corresponding number: ";
         cin >> menu_choice;
 
 
