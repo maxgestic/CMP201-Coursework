@@ -24,13 +24,19 @@ void print(vector<int> const &input) {
         cout << i << " ";
     }
 }
+void print(vector<double> const &input) {
+    for (double i : input) {
+        cout << i << " ";
+    }
+}
 
-int bm(string data, string pattern) {
+double bm(string data, string pattern) {
 
     //boyer-moore function
 
     string current, check_data;
     int data_position;
+    double time;
 
     //debug values
 //    data = "the the quick brown fox jumps over the lazy dog";
@@ -71,9 +77,11 @@ int bm(string data, string pattern) {
 
             chrono::duration<double> time_taken_bm = finish_bm - start_bm;
 
-            cout << "It took this look to finish Boyer Moore: " << time_taken_bm.count() << endl;
+            time = time_taken_bm.count();
 
-            return 0;
+            cout << "It took this look to finish Boyer Moore: " << time << endl;
+
+            return time;
 
         }
 
@@ -164,12 +172,13 @@ int bm(string data, string pattern) {
 
 }
 
-int rk(string data, const string &pattern) {
+double rk(string data, const string &pattern) {
 
     //DEBUG VALUES
     //string data = "The Quick Brown Fox Jumps Over The Lazy Dog";
     //string pattern = "Quick Brown";
     int index;
+    double time;
 
     vector<int> indexes;
 
@@ -198,11 +207,11 @@ int rk(string data, const string &pattern) {
 
         if (i >= pattern_size) {
 
-            data_hash -= p * data[i - pattern_size] % prime_m;
+            data_hash = data_hash - (p * data[i - pattern_size] % prime_m);
 
             if (data_hash < 0) {
 
-                data_hash += prime_m;
+                data_hash = data_hash + prime_m;
 
                 //cout << data_hash << endl;
 
@@ -228,21 +237,28 @@ int rk(string data, const string &pattern) {
     //cout << endl << "Pattern was found at these indexes: " << endl;
     //print(indexes);
 
-    cout << "It took this look to finish rabin karp : " << time_taken_rk.count() << endl;
+    time = time_taken_rk.count();
 
-    return 0;
+    cout << "It took this look to finish rabin karp: " << time << endl;
+
+    return time;
 }
 
 int run_both() {
 
     //initialising running both algorithms one after another testing performance
     string data, pattern, filename;
+    int num;
+    vector<double> bm_a, rk_a;
 
     cout << endl << "Please enter the file name: ";
     cin >> filename;
     cout << endl;
     cout << endl << "Please enter the search string: ";
     cin >> pattern;
+    cout << endl;
+    cout << endl << "Please enter How often you want to loop: ";
+    cin >> num;
     cout << endl;
 
     ifstream f(filename);
@@ -255,8 +271,17 @@ int run_both() {
 
     //cout << data;
 
-    bm(data, pattern);
-    rk(data, pattern);
+    for (int i = 0; i < num; i++){
+        bm_a.push_back(bm(data, pattern));
+        rk_a.push_back(rk(data, pattern));
+    }
+
+    cout << "Times for BM:" << endl;
+    print(bm_a);
+    cout << endl;
+    cout << "Times for RK:" << endl;
+    print(rk_a);
+    cout << endl;
 
     return 0;
 
