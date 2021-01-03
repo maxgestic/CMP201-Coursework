@@ -7,16 +7,16 @@
 
 using namespace std;
 
-const unsigned PRIME_BASE = 257;
-const unsigned PRIME_MOD = 1000000007;
+const unsigned prime_b = 257;
+const unsigned prime_m = 1000000007;
 
 unsigned lhash(const string &s) {
-    long long ret = 0;
+    long long r = 0;
     for (char i : s) {
-        ret = ret * PRIME_BASE + i;
-        ret %= PRIME_MOD; //don't overflow
+        r = r * prime_b + i;
+        r %= prime_m; //don't overflow
     }
-    return ret;
+    return r;
 }
 
 void print(vector<int> const &input) {
@@ -175,40 +175,44 @@ int rk(string data, const string &pattern) {
 
     auto start_rk = chrono::high_resolution_clock::now();
 
+    int pattern_size = pattern.size(), data_size = data.size();
+
     long long pattern_hash = lhash(pattern);
     long long data_hash = 0;
     //cout << "Hashes are: " << pattern_hash << " and " << data_hash << endl;
 
     long long p = 1;
 
-    for (int i = 0; i < pattern.size(); i++) {
+    for (int i = 0; i < pattern_size; i++) {
 
-        p = (p * PRIME_BASE) % PRIME_MOD;
+        p = (p * prime_b) % prime_m;
 
     }
 
-    for (int i = 0; i < data.size(); i++) {
+    for (int i = 0; i < data_size; i++) {
 
-        data_hash = data_hash * PRIME_BASE + data[i];
+        data_hash = data_hash * prime_b + data[i];
 
-        data_hash %= PRIME_MOD;
+        data_hash %= prime_m;
 
 
-        if (i >= pattern.size()) {
+        if (i >= pattern_size) {
 
-            data_hash -= p * data[i - pattern.size()] % PRIME_MOD;
+            data_hash -= p * data[i - pattern_size] % prime_m;
 
             if (data_hash < 0) {
 
-                data_hash += PRIME_MOD;
+                data_hash += prime_m;
+
+                //cout << data_hash << endl;
 
             }
 
         }
 
-        if (i >= pattern.size() - 1 && pattern_hash == data_hash) {
+        if (i >= pattern_size - 1 && pattern_hash == data_hash) {
 
-            index = i - (pattern.size() - 1);
+            index = i - (pattern_size - 1);
 
             //cout << "match found";
             indexes.push_back(index);
