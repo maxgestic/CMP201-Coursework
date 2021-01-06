@@ -194,22 +194,28 @@ double rk(string data, const string &pattern) {
 
     for (int i = 0; i < pattern_size; i++) {
 
+        //calculating power
         p = (p * prime_b) % prime_m;
 
     }
 
+    //run loop as often as there are chars in the data
     for (int i = 0; i < data_size; i++) {
+
+        //calculate data hash by adding the next letter
 
         data_hash = data_hash * prime_b + data[i];
 
         data_hash %= prime_m;
 
-
+        //if algorithm is past i of the lengh if the pattern this will recalc the data hash by removing the first letter
         if (i >= pattern_size) {
 
             data_hash = data_hash - (p * data[i - pattern_size] % prime_m);
 
             if (data_hash < 0) {
+
+                //make sure data hash is not negative
 
                 data_hash = data_hash + prime_m;
 
@@ -218,6 +224,8 @@ double rk(string data, const string &pattern) {
             }
 
         }
+
+        //Check if the pattern hash matches the data hash
 
         if (i >= pattern_size - 1 && pattern_hash == data_hash) {
 
